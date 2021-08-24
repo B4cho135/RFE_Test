@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model Web.Models.ComparisonListViewModel
+
+<div class="container">
+    <div class="row" style="height:500px">
+        <form asp-controller="Home" asp-action="Index" method="post">
+            <div class="col">
+                <!--Table-->
+                <table class="table table-striped" style="table-layout: fixed; word-wrap: break-word;">
+
+                    <!--Table head-->
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Right</th>
+                            <th>Left</th>
+                            <th>Result</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <!--Table head-->
+                    <!--Table body-->
+                    <tbody>
+                        @if (Model.Comparisons != null && Model.Comparisons.Count > 0)
+                        {
+                            @for (int i = 0; i < Model.Comparisons.Count; i++)
+                            {
+                        <tr>
+                            <th scope="row">@i</th>
+                            @if (!string.IsNullOrEmpty(Model.Comparisons[i].RightSide))
+                            {
+                                <td style="word-wrap: break-word;">@Model.Comparisons[i].RightSide</td>
+                            }
+                            else
+                            {
+                                <input type="text" asp-for="ID" value="@Model.Comparisons[i].ID" hidden />
+                                <td style="word-wrap: break-word;"><input type="text" asp-for="RightSide" /></td>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.Comparisons[i].LeftSide))
+                            {
+                                <td>@Model.Comparisons[i].LeftSide</td>
+                            }
+                            else
+                            {
+                                <input type="text" asp-for="ID" value="@Model.Comparisons[i].ID" hidden />
+                                <td style="word-wrap: break-word;"><input type="text" asp-for="LeftSide" /></td>
+                            }
+                            <td id="@string.Join("", Model.Comparisons[i].ID.ToString() + "Result")"></td>
+                            @if (string.IsNullOrEmpty(Model.Comparisons[i].RightSide) || string.IsNullOrEmpty(Model.Comparisons[i].LeftSide))
+                            {
+                                <td style="word-wrap: break-word;"><input type="submit" class="btn btn-success" value="Add" /></td>
+                            }
+                            else
+                            {
+                                <td style="word-wrap: break-word;"><input id="@Model.Comparisons[i].ID" type="button" class="btn btn-primary" value="Compare" /></td>
+                            }
+                        </tr>
+                            }
+                        }
+                        <tr>
+                            <th scope="row"></th>
+                            <td style="word-wrap: break-word;"><input type="text" asp-for="RightSide" /></td>
+                            <td style="word-wrap: break-word;"><input type="text" asp-for="LeftSide" /></td>
+                            <td style="word-wrap: break-word;"></td>
+                            <td style="word-wrap: break-word;"><input type="submit" class="btn btn-success" value="Add" /></td>
+                        </tr>
+                    </tbody>
+                    <!--Table body-->
+
+
+                </table>
+                <!--Table-->
+            </div>
+        </form>
+        <div class="col">
+            <h2 align="center">Base64 Encoder</h2>
+            <hr />
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <textarea id="input" class="form-control" rows="10" placeholder="Test input template">{&#13;&#10;    "input" : "your input here"&#13;&#10;}</textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-center">
+                    <input id="Encoder" class="btn btn-success" type="button" value="Encode">
+                </div>
+            </div>
+            <div class="form-horizontal" style="margin-top:15px">
+                <div class="form-group">
+                    <textarea id="output" class="form-control" rows="4" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $("#Encoder").click(function () {
+            var input = $("#input").val();
+
+            var encodedInput = btoa(input);
+
+            $("#output").text(encodedInput);
+        });
+
+        $("input").click(function (e) {
+            var idClicked = e.target.id;
+            $.ajax({
+                url: "https://localhost:5011/v1/diff/" + idClicked,
+                cache: false,
+                success: function (response) {
+                    if (response.message == null) {
+
+                        $("#" + idClicked + "Result").text(JSON.stringify(response.offsets));
+                    }
+                    else {
+                        $("#" + idClicked + "Result").text(response.message);
+                    }
+                },
+                error: function () {
+                    $("#" + idClicked + "Result").text("Could not fetch data");
+                }
+            });
+        });
+    </script>
+}

@@ -34,6 +34,12 @@ namespace API.Controllers
             return Ok(comparisons);
         }
 
+
+        //Improvement
+        //All the code can be moved to Comparison Service to make it cleaner
+
+        //Limitation
+        //it crashes when base64 encoded string is not JSON
         [HttpPost("{ID}/right")]
         public async Task<IActionResult> Right(Guid ID, byte[] base64EncodedJSON)
         {
@@ -91,6 +97,12 @@ namespace API.Controllers
 
         }
 
+
+        //Improvement
+        //All the code can be moved to Comparison Service to make it cleaner
+
+        //Limitation
+        //it crashes when base64 encoded string is not JSON
         [HttpPost("{ID}/left")]
         public async Task<IActionResult> Left(Guid ID, byte[] base64EncodedJSON)
         {

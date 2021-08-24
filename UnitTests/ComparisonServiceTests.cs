@@ -9,6 +9,9 @@ using Xunit;
 
 namespace UnitTests
 {
+    //Improvements
+    //There must be several examples of test cases and they should not be constants.
+    //Implementing logic here seperately would be nice, instead of comparing service results to constants
     public class ComparisonServiceTests
     {
         [Fact]
